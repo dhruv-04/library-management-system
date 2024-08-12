@@ -113,5 +113,6 @@ def dashboardLibrarian():
     print("|| 2) Modify existing book information.                                                                    ||")
     print("|| 3) Search books by title, author, genre, publisher or year of publication.                              ||")
     print("|| 4) Add new member for membership.                                                                       ||")
+    print("|| 5) Log out.                                                                                             ||")
     print("=============================================================================================================")
     choice()
