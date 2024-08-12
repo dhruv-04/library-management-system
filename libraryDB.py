@@ -2,9 +2,14 @@ import mysql.connector as mysql
 import string 
 import random
 from faker import Faker
+import bcrypt
 
 #create connection object
 db = mysql.connect(host="localhost", user="root", password="Dhruv471__01") #connection object
+
+def createHashedPassword(passwd):
+    hashedPasswd = bcrypt.hashpw(passwd.encode('utf-8'), bcrypt.gensalt())
+    return hashedPasswd
 
 
 #function to create fake data
@@ -75,7 +80,21 @@ if db.is_connected():
                                                                     books[5], books[6], books[7]))
         
         db.commit()
-        print("Insertion of 200 books successful!")
+        print("Insertion of 100 books successful!")
+
+
+        #creation of Login table
+        cs.execute('''CREATE TABLE LOGINDATA(
+                   Username VARCHAR(50) NOT NULL PRIMARY KEY,
+                   Hashed_Password VARCHAR(60) NOT NULL,
+                   Status VARCHAR(7) NOT NULL DEFAULT 'OFFLINE');''')
+        
+        passwd = 'librarian01'
+
+        cs.execute('''INSERT INTO LOGINDATA VALUES(
+                   'Librarian01', %s, 'OFFLINE');''', (createHashedPassword(passwd).decode(),))
+        
+        db.commit()
 
     except mysql.Error as e:
         print(e)
