@@ -1,6 +1,6 @@
 # Library-Management-System
 This is a Library Management Project which is being built in Python and the database support is given by MySql.
-This project is still in development and further information will be updated along the way. The changes that been commited in this project are verified and working correctly, provided the configurations in the laptop are correct. This is currently a **TERMINAL UI** based project, it will further be developed to a proper GUI in the near future.
+This project is still in development and further information will be updated along the way. The changes that has been commited in this project are verified and working correctly, provided the configurations in the laptop are correct. This is currently a **TERMINAL UI** based project, it will further be developed to a proper GUI in the near future.
 
 ## Prerequisites
 **ESSENTIAL SOFTWARES:**
@@ -16,6 +16,8 @@ This project is still in development and further information will be updated alo
   3) **Interactive Menu** : An interactive menu has been implemented so that the user can use it effectively just like it would have been in a GUI.
   4) **Error Handling** : All the functions that have been implemented, have right error handling mechanism in place in order to prevent any unwanted execution of the program.
   5) **Faker module** : Faker module has been used to provide 50 test data in the database, also a small script created by me has also been used in order to generate another 50 test data (total 100).
+
+**NOTE** : Lazy import has been used in some places in order to prevent the circular import problem.
 
 
 
