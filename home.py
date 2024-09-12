@@ -1,6 +1,5 @@
 import mysql.connector as mysql
 import bcrypt
-from librarian import dashboardLibrarian
 
 
 # Database connection
@@ -67,6 +66,7 @@ def librarian_login():
         hashed_password = result[0]
         if verify_password(password, hashed_password):
             print("Login Successful!")
+            from librarian import dashboardLibrarian
             dashboardLibrarian()
         else:
             print("Password Incorrect! Please try again!")

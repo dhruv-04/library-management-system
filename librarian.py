@@ -7,6 +7,26 @@ except mysql.Error as e:
     print(e)
 
 
+genreCode = {
+    'Horror' : 'HR', 
+    'Romantic' : 'RM',
+    'Psychological thriller' : 'PT',
+    'Mystery' : 'MS',
+    'Fiction' : 'FC',
+    'Biography' : 'BO',
+    'Drama' : 'DA',
+    'AutoBiography' : 'AB',
+    'Children' : 'CD',
+    'Poetry' : 'PE',
+    'Crime' : 'CR'
+}
+
+#function to create bookID
+def createBookID(genre, yearOfPublication, author):
+    cs.execute('''SELECT LPAD(COUNT(Book_ID) + 1, 4, '0') FROM BOOKS WHERE AUTHOR = %s''', (author,))
+    counter = cs.fetchone()[0]
+    return genreCode[genre] + str(yearOfPublication) + author[0:2].upper() + counter
+
 
 # funciton to add details in the books table in the database
 def addDetails():
@@ -61,8 +81,8 @@ def addDetails():
 
     #block to execute the insert operation in the books table
     try:
-        cs.execute('''INSERT INTO books (Title, Author, Publisher, Year_Of_Publication, Category, Language, No_Of_Pages, No_Of_Copies) VALUES
-               (%s, %s, %s, %s, %s, %s, %s, %s);''', (title, author, publisher, yop, genre, language, pages, copies))
+        cs.execute('''INSERT INTO books (Book_ID, Title, Author, Publisher, Year_Of_Publication, Category, Language, No_Of_Pages, No_Of_Copies) VALUES
+               (%s, %s, %s, %s, %s, %s, %s, %s, %s);''', (createBookID(genre, yop, author), title, author, publisher, yop, genre, language, pages, copies))
         db.commit()
         print("Books details updated successfully!")
     except mysql.Error as e:
@@ -107,36 +127,35 @@ def viewBooks():
         # Ensure the cursor is closed
         if viewCursor:
             viewCursor.close()
-    # Returns control to the dashboard
-    dashboardLibrarian()
 
 
 #function to return the choice of the user
 def choice():
-    try:
-        print("Enter the choice : ", end="")
-        ch = int(input())
-    except ValueError:
-        print("Invalid Input! Enter the correct number.")
-        choice()
-    
-    match(ch):
-        case 1:
-            addDetails()
-        case 2:
-            viewBooks()
-        case 3:
-            pass
-        case 4:
-            pass
-        case 5:
-            print("Logging You out....")
-            from main import home_function
-            home_function()
-        case _:
-            print("Enter the correct choice!")
-            print()
-            choice()
+    while True:
+        ch = dashboardLibrarian()
+        match ch:
+            case 1:
+                addDetails()
+                # dashboardLibrarian()
+            case 2:
+                viewBooks()
+                # dashboardLibrarian()
+            case 3:
+                # dashboardLibrarian()
+                pass
+            case 4:
+                # dashboardLibrarian()
+                pass
+            case 5:
+                pass
+            case 6:
+                print("Logging You out....")
+                from main import home_function
+                home_function()
+                break
+            case _:
+                print("Enter the correct choice!")
+                print()
 
 #function to show librarian dashboard option
 def dashboardLibrarian():
@@ -152,9 +171,16 @@ def dashboardLibrarian():
     print("=============================================================================================================")
     print("|| 1) Enter the book details to be added.                                                                  ||")
     print("|| 2) View the books and their availabilty inside the library.                                             ||")
-    print("|| 2) Modify existing book information.                                                                    ||")
-    print("|| 3) Search books by title, author, genre, publisher or year of publication.                              ||")
-    print("|| 4) Add new member for membership.                                                                       ||")
-    print("|| 5) Log out.                                                                                             ||")
+    print("|| 3) Modify existing book information.                                                                    ||")
+    print("|| 4) Search books by title, author, genre, publisher or year of publication.                              ||")
+    print("|| 5) Member Registration                                                                                  ||")
+    print("|| 6) Log out.                                                                                             ||")
     print("=============================================================================================================")
-    choice()
+    try:
+        choice = int(input("Enter your choice: "))
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        return dashboardLibrarian()
+    return choice
+
+choice()

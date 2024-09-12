@@ -11,12 +11,26 @@ def createHashedPassword(passwd):
     hashedPasswd = bcrypt.hashpw(passwd.encode('utf-8'), bcrypt.gensalt())
     return hashedPasswd
 
+genreCode = {
+    'Horror' : 'HR', 
+    'Romantic' : 'RM',
+    'Psychological thriller' : 'PT',
+    'Mystery' : 'MS',
+    'Fiction' : 'FC',
+    'Biography' : 'BO',
+    'Drama' : 'DA',
+    'AutoBiography' : 'AB',
+    'Children' : 'CD',
+    'Poetry' : 'PE',
+    'Crime' : 'CR'
+}
+
 
 #function to create fake data
 def createFakeData():
     books = [
         ''.join(random.choices(string.ascii_letters + ' ', k = 20)),
-        ''.join(random.choices(string.ascii_letters + ' ', k = 10)),
+        ''.join(random.choices(string.ascii_letters, k = 10)),
         ''.join(random.choices(string.ascii_letters + ' ', k = 10)),
         random.randint(1900, 2024),
         ''.join(random.choice(['Horror', 'Romantic', 'Psychological thriller', 'Mystery', 'Fiction', 'Biography',
@@ -32,15 +46,24 @@ def fakerFakeData():
     faker = Faker()
     return [
         faker.sentence(nb_words = 2),
-        faker.name(),
+        faker.first_name(),
         faker.company(),
         random.randint(1900, 2024),
         ''.join(random.choice(['Horror', 'Romantic', 'Psychological thriller', 'Mystery', 'Fiction', 'Biography',
                                 'Drama', 'AutoBiography', 'Children', 'Poetry', 'Crime'])),
-        faker.language_name(),       
+        ''.join(random.choice(['English', 'Hindi', 'Marathi', 'Gujrati', 'Spanish', 'French', 'Urdu', 'Dutch', 'German',
+                               'Portugese', 'Japanese'])),      
         random.randint(10, 1000),
         random.randint(1,20)
     ]
+
+
+#function to create bookID
+def createBookID(genre, yearOfPublication, author):
+    cs.execute('''SELECT LPAD(COUNT(Book_ID) + 1, 4, '0') FROM BOOKS WHERE AUTHOR = %s''', (author,))
+    counter = cs.fetchone()[0]
+    return genreCode[genre] + str(yearOfPublication) + author[0:2].upper() + counter
+
 
 if db.is_connected():
     cs = db.cursor()  # cursor object
@@ -54,7 +77,7 @@ if db.is_connected():
 
         cs.execute('''
             CREATE TABLE BOOKS (
-                Book_ID INT AUTO_INCREMENT PRIMARY KEY,
+                Book_ID VARCHAR(12) PRIMARY KEY,
                 Title VARCHAR(255) NOT NULL,
                 Author VARCHAR(255) NOT NULL,
                 Publisher VARCHAR(255) NOT NULL,
@@ -70,13 +93,13 @@ if db.is_connected():
         for i in range(100):
             if(i < 51):
                 books = createFakeData()
-                cs.execute('''INSERT INTO BOOKS(Title, Author, Publisher, Year_Of_Publication, Category, Language, No_Of_Pages, No_Of_Copies)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',(books[0], books[1], books[2], books[3], books[4],
+                cs.execute('''INSERT INTO BOOKS(Book_ID, Title, Author, Publisher, Year_Of_Publication, Category, Language, No_Of_Pages, No_Of_Copies)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',(createBookID(books[4], books[3], books[1]), books[0], books[1], books[2], books[3], books[4],
                                                                     books[5], books[6], books[7]))
             else:
                 books = fakerFakeData()
-                cs.execute('''INSERT INTO BOOKS(Title, Author, Publisher, Year_Of_Publication, Category, Language, No_Of_Pages, No_Of_Copies)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',(books[0], books[1], books[2], books[3], books[4],
+                cs.execute('''INSERT INTO BOOKS(Book_ID, Title, Author, Publisher, Year_Of_Publication, Category, Language, No_Of_Pages, No_Of_Copies)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',(createBookID(books[4], books[3], books[1]), books[0], books[1], books[2], books[3], books[4],
                                                                     books[5], books[6], books[7]))
         
         db.commit()
