@@ -3,9 +3,13 @@ import string
 import random
 from faker import Faker
 import bcrypt
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 #create connection object
-db = mysql.connect(host="localhost", user="root", password="Dhruv471__01") #connection object
+db = mysql.connect(host=os.getenv('DB_HOST'), user=os.getenv('DB_USER'), password=os.getenv('DB_PASSWORD')) #connection object
 
 def createHashedPassword(passwd):
     hashedPasswd = bcrypt.hashpw(passwd.encode('utf-8'), bcrypt.gensalt())
